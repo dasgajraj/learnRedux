@@ -1,29 +1,52 @@
 import { StyleSheet, Text, View, Button, Alert } from 'react-native'
-import React from 'react'
-import {useDispatch} from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { addToCart } from "../redux/Action"
 
 const Product = ({ item }) => {
+    const cartItems = useSelector((state) => state.reducer)
     const dispatch = useDispatch();
+    const [isAdded, setIsAdded] = useState(false)
 
     const handleAddToCart = () => {
-        dispatch(addToCart)
+        dispatch(addToCart(item));
         Alert.alert(
             'Added to Cart',
             `${item.name} added to your cart. Price: $${item.price}`
-        )
-    }
+        );
+    };
 
+
+    useEffect(() => {
+        if (cartItems && cartItems.length) {
+            cartItems.forEach((ele) => {
+                if (ele.name === item.name) {
+                    setIsAdded(true)
+                }
+            }
+            )
+        }
+    }, [cartItems])
 
     return (
         <View style={styles.card}>
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.price}>${item.price}</Text>
             <Text style={[styles.color, { color: item.color }]}>{item.color}</Text>
-            <Button
-                title="Add To Cart"
-                onPress={handleAddToCart}
-            />
+            {
+                isAdded
+                    ?
+                    <Button
+                        title="Remove From Cart"
+                        onPress={() => { }}
+                    />
+                    :
+                    <Button
+                        title="Add To Cart"
+                        onPress={handleAddToCart}
+                    />
+            }
+
         </View>
     )
 }

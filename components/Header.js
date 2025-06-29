@@ -1,49 +1,78 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
+  const cartData = useSelector((state) => state.reducer);
+  const [itemCount, setItemCount] = useState(0);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    setItemCount(cartData.length);
+    setTotal(cartData.reduce((acc, item) => acc + (item.price || 0), 0));
+  }, [cartData]);
+
+  const formattedTotal = total.toFixed(2);
+
   return (
     <View style={styles.header}>
       <Text style={styles.title}>🛍️ My Shopping App</Text>
       <View style={styles.cartInfo}>
-        <Text style={styles.cartText}>🛒 Cart: </Text>
-        <Text style={styles.cartItem}>Items: 0</Text>
-        <Text style={styles.cartItem}> | Total: $0</Text>
+        <Text style={styles.cartIcon}>🛒</Text>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{itemCount}</Text>
+        </View>
+        <Text style={styles.totalText}>${formattedTotal}</Text>
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#6200EE',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    borderRadius: 12,
     marginBottom: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   title: {
-    color: 'white',
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: '#333333',
+    fontSize: 24,
+    fontWeight: '700',
     marginBottom: 10,
   },
   cartInfo: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
   },
-  cartText: {
-    color: 'white',
+  cartIcon: {
+    fontSize: 22,
+    marginRight: 6,
+  },
+  badge: {
+    backgroundColor: '#333333',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginRight: 8,
+  },
+  badgeText: {
+    color: '#ffffff',
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: 14,
   },
-  cartItem: {
-    color: 'white',
+  totalText: {
+    color: '#333333',
     fontSize: 16,
-  }
-})
+    fontWeight: '500',
+  },
+});
