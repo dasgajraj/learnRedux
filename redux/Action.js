@@ -1,4 +1,4 @@
-import { Add_To_Cart, Remove_From_Cart } from './Constant'
+import { Add_To_Cart, Remove_From_Cart,Theme } from './Constant'
 
 export function addToCart(item) {
     return {
@@ -14,3 +14,10 @@ export function removeFromCart(itemName) {
     }
 
 }
+
+export function setTheme (isDarkMode) {
+  return {
+    type: Theme,
+    data: isDarkMode
+  };
+};

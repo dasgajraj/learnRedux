@@ -1,9 +1,13 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { lightTheme, darkTheme } from '../common/colors';
 
 const Header = () => {
   const cartData = useSelector((state) => state.reducer);
+  const isDarkMode = useSelector((state) => state.themeReducer.isDarkMode);
+  const theme = isDarkMode ? darkTheme : lightTheme;
+
   const [itemCount, setItemCount] = useState(0);
   const [total, setTotal] = useState(0);
 
@@ -15,14 +19,14 @@ const Header = () => {
   const formattedTotal = total.toFixed(2);
 
   return (
-    <View style={styles.header}>
-      <Text style={styles.title}>🛍️ My Shopping App</Text>
+    <View style={[styles.header, { backgroundColor: theme.card, shadowColor: theme.text }]}>
+      <Text style={[styles.title, { color: theme.text }]}>🛍️ My Shopping App</Text>
       <View style={styles.cartInfo}>
-        <Text style={styles.cartIcon}>🛒</Text>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{itemCount}</Text>
+        <Text style={[styles.cartIcon, { color: theme.primary }]}>🛒</Text>
+        <View style={[styles.badge, { backgroundColor: theme.primary }]}>
+          <Text style={[styles.badgeText, { color: '#fff' }]}>{itemCount}</Text>
         </View>
-        <Text style={styles.totalText}>${formattedTotal}</Text>
+        <Text style={[styles.totalText, { color: theme.text }]}>${formattedTotal}</Text>
       </View>
     </View>
   );
@@ -32,19 +36,16 @@ export default Header;
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#ffffff',
     paddingVertical: 20,
     paddingHorizontal: 24,
     borderRadius: 12,
     marginBottom: 16,
     alignItems: 'center',
-    shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
   },
   title: {
-    color: '#333333',
     fontSize: 24,
     fontWeight: '700',
     marginBottom: 10,
@@ -59,19 +60,16 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   badge: {
-    backgroundColor: '#333333',
     borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,
     marginRight: 8,
   },
   badgeText: {
-    color: '#ffffff',
     fontWeight: '600',
     fontSize: 14,
   },
   totalText: {
-    color: '#333333',
     fontSize: 16,
     fontWeight: '500',
   },
