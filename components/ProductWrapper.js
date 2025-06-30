@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Header from './Header';
 import Product from './Product';
 import { useSelector } from 'react-redux';
@@ -8,7 +8,6 @@ import { lightTheme, darkTheme } from '../common/colors';
 const ProductWrapper = ({ navigation }) => {
   const isDarkMode = useSelector((state) => state.themeReducer.isDarkMode);
   const theme = isDarkMode ? darkTheme : lightTheme;
-  const [apiData, setApiData] = useState([]);
 
   const products = [
     { name: 'Apple', price: 4000, color: 'black' },
@@ -17,10 +16,10 @@ const ProductWrapper = ({ navigation }) => {
     { name: 'Techno', price: 4, color: 'orange' },
   ];
 
-
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <Header />
+      
       <Button
         title="Settings Page"
         onPress={() => navigation.navigate('settings')}
@@ -34,8 +33,6 @@ const ProductWrapper = ({ navigation }) => {
             <Product key={item.name} item={item} />
           ))}
         </View>
-
-
       </ScrollView>
     </View>
   );
@@ -61,6 +58,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 8,
     backgroundColor: '#eee',
+  },
+  loading: {
+    textAlign: 'center',
+    marginVertical: 10,
   },
 });
 
