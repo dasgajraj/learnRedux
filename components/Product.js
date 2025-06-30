@@ -1,31 +1,35 @@
 import { StyleSheet, Text, View, Button, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addToCart } from "../redux/Action"
+import { addToCart, removeFromCart } from "../redux/Action"
 
 const Product = ({ item }) => {
     const cartItems = useSelector((state) => state.reducer)
     const dispatch = useDispatch();
     const [isAdded, setIsAdded] = useState(false)
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (item) => {
         dispatch(addToCart(item));
         Alert.alert(
             'Added to Cart',
             `${item.name} added to your cart. Price: $${item.price}`
         );
     };
+        const handleRemoveFromCart = (item) => {
+        dispatch(removeFromCart(item.name));
+        Alert.alert(
+            'Removed From Cart',
+            `${item.name} removed from your cart. Price: $${item.price}`
+        );
+    };
 
 
     useEffect(() => {
-        if (cartItems && cartItems.length) {
-            cartItems.forEach((ele) => {
-                if (ele.name === item.name) {
-                    setIsAdded(true)
-                }
-            }
-            )
-        }
+      let result = cartItems.filter((ele)=>{
+        return ele.name===item.name
+      })
+      if(result.length) setIsAdded(true)
+      else setIsAdded(false)
     }, [cartItems])
 
     return (
@@ -38,12 +42,12 @@ const Product = ({ item }) => {
                     ?
                     <Button
                         title="Remove From Cart"
-                        onPress={() => { }}
+                        onPress={()=>handleRemoveFromCart(item)}
                     />
                     :
                     <Button
                         title="Add To Cart"
-                        onPress={handleAddToCart}
+                        onPress={()=>handleAddToCart(item)}
                     />
             }
 
@@ -80,3 +84,6 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize',
     }
 })
+
+
+/*Implement remove from cart functionality in Product component and Redux actions */
