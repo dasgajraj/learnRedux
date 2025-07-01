@@ -1,24 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Switch, ScrollView, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTheme } from '../redux/Action';
 import { lightTheme, darkTheme } from '../common/colors';
 
+import {
+  FontAwesome5,
+  MaterialCommunityIcons,
+  MaterialIcons,
+  Entypo,
+} from '@expo/vector-icons';
+
 const Settings = () => {
   const isDarkMode = useSelector((state) => state.themeReducer.isDarkMode);
   const { user, loading, error } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
+  const cartData = useSelector((state)=> state.reducer)
+  const [total,setTotal] = useState(0);
+
+  useEffect(()=>{
+    setTotal(cartData.reduce((accu,current)=> accu+current.price,0))
+  },[isDarkMode])
 
   const theme = isDarkMode ? darkTheme : lightTheme;
   const toggleSwitch = () => dispatch(setTheme(!isDarkMode));
 
-  if (loading) return <View style={[styles.container, { backgroundColor: theme.background }]}><Text style={{ color: theme.text }}>Loading...</Text></View>;
-  if (error) return <View style={[styles.container, { backgroundColor: theme.background }]}><Text style={{ color: 'red' }}>{error}</Text></View>;
-  if (!user) return <View style={[styles.container, { backgroundColor: theme.background }]}><Text style={{ color: theme.text }}>No user data available.</Text></View>;
+  if (loading) return <CenteredText text="Loading..." color={theme.text} bg={theme.background} />;
+  if (error) return <CenteredText text={error} color="red" bg={theme.background} />;
+  if (!user) return <CenteredText text="No user data available." color={theme.text} bg={theme.background} />;
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.text }]}>Settings</Text>
+      <Text style={[styles.title, { color: theme.text }]}>User Settings</Text>
 
       <View style={styles.row}>
         <Text style={[styles.label, { color: theme.text }]}>Dark Mode</Text>
@@ -29,62 +42,96 @@ const Settings = () => {
           onValueChange={toggleSwitch}
           value={isDarkMode}
         />
+        <Text>Your Total Was {total}</Text>
       </View>
 
-      {/* User Profile */}
-      <Text style={[styles.sectionTitle, { color: theme.text }]}>User Details</Text>
+      {/* Profile */}
+      <Section title="Profile" theme={theme}>
+        <View style={styles.profileContainer}>
+          <Image source={{ uri: user.image }} style={styles.avatar} />
+          <Text style={[styles.name, { color: theme.text }]}>{user.firstName} {user.lastName}</Text>
+          <Text style={{ color: theme.text }}>{user.email}</Text>
+          <Text style={{ color: theme.text }}>{user.username} • {user.gender}, {user.age}</Text>
+          <Text style={{ color: theme.text }}>Born: {user.birthDate}</Text>
+          <Text style={{ color: theme.text }}>Phone: {user.phone}</Text>
+        </View>
+      </Section>
 
-      <View style={styles.profileContainer}>
-        <Image source={{ uri: user.image }} style={styles.avatar} />
-        <Text style={[styles.name, { color: theme.text }]}>{user.firstName} {user.lastName}</Text>
-        <Text style={{ color: theme.text }}>{user.email}</Text>
-        <Text style={{ color: theme.text }}>Age: {user.age}, Gender: {user.gender}</Text>
-        <Text style={{ color: theme.text }}>Birth Date: {user.birthDate}</Text>
-        <Text style={{ color: theme.text }}>Phone: {user.phone}</Text>
-        <Text style={{ color: theme.text }}>Username: {user.username}</Text>
-        <Text style={{ color: theme.text }}>Blood Group: {user.bloodGroup}</Text>
-        <Text style={{ color: theme.text }}>Eye Color: {user.eyeColor}</Text>
-        <Text style={{ color: theme.text }}>Hair: {user.hair?.color} - {user.hair?.type}</Text>
-      </View>
+      {/* Personal Info */}
+      <Section title="Personal Info" theme={theme}>
+        <InfoItem icon="tint" iconFamily={FontAwesome5} label="Blood Group" value={user.bloodGroup} theme={theme} />
+        <InfoItem icon="eye" iconFamily={FontAwesome5} label="Eye Color" value={user.eyeColor} theme={theme} />
+        <InfoItem icon="cut" iconFamily={FontAwesome5} label="Hair" value={`${user.hair?.color}, ${user.hair?.type}`} theme={theme} />
+        <InfoItem icon="ruler-vertical" iconFamily={FontAwesome5} label="Height" value={`${user.height} cm`} theme={theme} />
+        <InfoItem icon="scale-bathroom" iconFamily={MaterialCommunityIcons} label="Weight" value={`${user.weight} kg`} theme={theme} />
+      </Section>
 
       {/* Address */}
-      <Text style={[styles.sectionTitle, { color: theme.text }]}>Address</Text>
-      <View style={styles.infoCard}>
-        <Text style={{ color: theme.text }}>{user.address?.address}</Text>
-        <Text style={{ color: theme.text }}>{user.address?.city}, {user.address?.state} {user.address?.postalCode}</Text>
-        <Text style={{ color: theme.text }}>{user.address?.country}</Text>
-      </View>
+      <Section title="Address" theme={theme}>
+        <InfoItem icon="map-marker" iconFamily={MaterialCommunityIcons} label="Address" value={user.address?.address} theme={theme} />
+        <InfoItem icon="location-city" iconFamily={MaterialIcons} label="City" value={`${user.address?.city}, ${user.address?.state} ${user.address?.postalCode}`} theme={theme} />
+        <InfoItem icon="flag" iconFamily={FontAwesome5} label="Country" value={user.address?.country} theme={theme} />
+      </Section>
 
       {/* Company */}
-      <Text style={[styles.sectionTitle, { color: theme.text }]}>Company</Text>
-      <View style={styles.infoCard}>
-        <Text style={{ color: theme.text }}>{user.company?.title}</Text>
-        <Text style={{ color: theme.text }}>{user.company?.name}</Text>
-        <Text style={{ color: theme.text }}>{user.company?.department}</Text>
-        <Text style={{ color: theme.text }}>{user.company?.address?.city}, {user.company?.address?.state}</Text>
-      </View>
+      <Section title="Company" theme={theme}>
+        <InfoItem icon="work" iconFamily={MaterialIcons} label="Title" value={user.company?.title} theme={theme} />
+        <InfoItem icon="office-building" iconFamily={MaterialCommunityIcons} label="Company" value={user.company?.name} theme={theme} />
+        <InfoItem icon="account-group" iconFamily={MaterialCommunityIcons} label="Department" value={user.company?.department} theme={theme} />
+        <InfoItem icon="map-marker" iconFamily={MaterialCommunityIcons} label="Location" value={`${user.company?.address?.city}, ${user.company?.address?.state}`} theme={theme} />
+      </Section>
 
       {/* Bank */}
-      <Text style={[styles.sectionTitle, { color: theme.text }]}>Bank</Text>
-      <View style={styles.infoCard}>
-        <Text style={{ color: theme.text }}>Card: {user.bank?.cardNumber}</Text>
-        <Text style={{ color: theme.text }}>Type: {user.bank?.cardType}</Text>
-        <Text style={{ color: theme.text }}>Expire: {user.bank?.cardExpire}</Text>
-        <Text style={{ color: theme.text }}>IBAN: {user.bank?.iban}</Text>
-      </View>
+      <Section title="Bank" theme={theme}>
+        <InfoItem icon="credit-card" iconFamily={FontAwesome5} label="Card" value={user.bank?.cardNumber} theme={theme} />
+        <InfoItem icon="layer-group" iconFamily={FontAwesome5} label="Type" value={user.bank?.cardType} theme={theme} />
+        <InfoItem icon="calendar-alt" iconFamily={FontAwesome5} label="Expiry" value={user.bank?.cardExpire} theme={theme} />
+        <InfoItem icon="university" iconFamily={FontAwesome5} label="IBAN" value={user.bank?.iban} theme={theme} />
+      </Section>
 
-      {/* Crypto */}
-      <Text style={[styles.sectionTitle, { color: theme.text }]}>Crypto Wallet</Text>
-      <View style={styles.infoCard}>
-        <Text style={{ color: theme.text }}>Coin: {user.crypto?.coin}</Text>
-        <Text style={{ color: theme.text }}>Network: {user.crypto?.network}</Text>
-        <Text style={{ color: theme.text }}>Wallet: {user.crypto?.wallet}</Text>
-      </View>
+      {/* Crypto Wallet */}
+      <Section title="Crypto Wallet" theme={theme}>
+        <InfoItem icon="bitcoin" iconFamily={FontAwesome5} label="Coin" value={user.crypto?.coin} theme={theme} />
+        <InfoItem icon="network" iconFamily={Entypo} label="Network" value={user.crypto?.network} theme={theme} />
+        <InfoItem icon="wallet" iconFamily={MaterialCommunityIcons} label="Wallet" value={user.crypto?.wallet} theme={theme} />
+      </Section>
     </ScrollView>
   );
 };
 
 export default Settings;
+
+// ✅ Reusable Components
+
+const CenteredText = ({ text, color, bg }) => (
+  <View style={[styles.container, { backgroundColor: bg, justifyContent: 'center', alignItems: 'center' }]}>
+    <Text style={{ color, fontSize: 16 }}>{text}</Text>
+  </View>
+);
+
+const Section = ({ title, children, theme }) => (
+  <View style={styles.section}>
+    <Text style={[styles.sectionTitle, { color: theme.text }]}>{title}</Text>
+    <View style={[styles.card, { backgroundColor: theme.card }]}>
+      {children}
+    </View>
+  </View>
+);
+
+const InfoItem = ({ icon, label, value, iconFamily = MaterialIcons, theme }) => {
+  const Icon = iconFamily;
+  return (
+    <View style={styles.infoRow}>
+      {icon && <Icon name={icon} size={20} color={theme.icon} style={{ marginRight: 10 }} />}
+      <Text style={[styles.infoText, { color: theme.text }]}>
+        {label && <Text style={styles.infoLabel}>{label}: </Text>}
+        {value}
+      </Text>
+    </View>
+  );
+};
+
+// 🎨 Styles
 
 const styles = StyleSheet.create({
   container: {
@@ -105,14 +152,26 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
   },
+  section: {
+    marginBottom: 24,
+  },
   sectionTitle: {
     fontSize: 22,
     fontWeight: '600',
-    marginVertical: 16,
+    marginBottom: 12,
+  },
+  card: {
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 3,
   },
   profileContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 12,
   },
   avatar: {
     width: 100,
@@ -124,10 +183,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
   },
-  infoCard: {
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#eee',
-    marginBottom: 16,
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  infoText: {
+    fontSize: 16,
+    flexShrink: 1,
+  },
+  infoLabel: {
+    fontWeight: '500',
   },
 });

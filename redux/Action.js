@@ -35,15 +35,12 @@ export const fetchUsers = () => {
     dispatch({ type: FETCH_USERS_REQUEST });
 
     try {
-      const response = await fetch("https://dummyjson.com/users/");
+      const response = await fetch("https://dummyjson.com/users/1");
       const result = await response.json();
-
-      // ✅ Filter only user with id === 1
-      const user = result.users.find((u) => u.id === 1);
 
       dispatch({
         type: FETCH_USERS_SUCCESS,
-        data: user || null, // null if not found
+        data: result, 
       });
     } catch (error) {
       dispatch({

@@ -8,7 +8,7 @@ import {
 
 const initialState = {
   loading: false,
-  user: null,    // ✅ single user object, not array
+  user: null,   
   error: null,
 };
 

@@ -1,17 +1,19 @@
-// ./common/colors.js
+// common/colors.js
 
 export const lightTheme = {
-  background: '#f4f4f4',
-  text: '#1c1c1c',
-  card: '#ffffff',
-  primary: '#007BFF',
-  secondary: '#6C757D',
+  background: '#fef6e4',      // soft beige
+  text: '#001858',            // dark blue
+  primary: '#f582ae',         // vibrant pink
+  card: '#cddafd',            // soft sky blue
+  accent: '#8bd3dd',          // teal
+  icon: '#f582ae',            // icon tint
 };
 
 export const darkTheme = {
-  background: '#181A20',  // Dark navy gray
-  text: '#F1F1F1',        // Light neutral white-ish
-  card: '#21242B',        // Slightly lighter than background for contrast
-  primary: '#4C8BF5',     // Bright blue accent
-  secondary: '#BBBBBB',   // Mid-tone gray for secondary text
+  background: '#1e1e2f',      // deep navy
+  text: '#ffffff',            // white
+  primary: '#ff8906',         // orange
+  card: '#2e2e48',            // dark blue-gray
+  accent: '#7f5af0',          // purple
+  icon: '#ff8906',            // icon tint
 };
